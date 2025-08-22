@@ -1,0 +1,130 @@
+.image-upload {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.image-upload__dropzone {
+  border: 2px dashed #d0d7de;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #fafbfc;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-upload__dropzone:hover {
+  border-color: #8b949e;
+  background: #f6f8fa;
+}
+
+.image-upload__dropzone--active {
+  border-color: #0969da;
+  background: #dbeafe;
+  transform: scale(1.02);
+}
+
+.image-upload__dropzone--processing {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.image-upload__input {
+  display: none;
+}
+
+.image-upload__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.image-upload__icon {
+  font-size: 3rem;
+  opacity: 0.7;
+}
+
+.image-upload__title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #24292f;
+}
+
+.image-upload__description {
+  margin: 0;
+  color: #656d76;
+  font-size: 1rem;
+}
+
+.image-upload__formats {
+  margin: 0;
+  color: #8b949e;
+  font-size: 0.875rem;
+}
+
+.image-upload__processing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.image-upload__spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 3px solid #e1e4e8;
+  border-top: 3px solid #0969da;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.image-upload__error {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #ffeef0;
+  border: 1px solid #ff818e;
+  border-radius: 8px;
+  color: #cf222e;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .image-upload__dropzone {
+    padding: 1.5rem;
+    min-height: 180px;
+  }
+  
+  .image-upload__title {
+    font-size: 1.25rem;
+  }
+  
+  .image-upload__description {
+    font-size: 0.9rem;
+  }
+  
+  .image-upload__formats {
+    font-size: 0.8rem;
+  }
+}
+
+/* Touch-friendly sizing */
+@media (hover: none) {
+  .image-upload__dropzone {
+    min-height: 160px;
+    padding: 1rem;
+  }
+}

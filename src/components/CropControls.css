@@ -1,0 +1,191 @@
+.crop-controls {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.crop-controls__section {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e1e4e8;
+}
+
+.crop-controls__title {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #24292f;
+  text-align: center;
+}
+
+.crop-controls__aspect-ratios {
+  margin-bottom: 1.5rem;
+}
+
+.crop-controls__label {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #24292f;
+}
+
+.crop-controls__ratio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  gap: 0.5rem;
+}
+
+.crop-controls__ratio-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.75rem 0.5rem;
+  border: 2px solid #d0d7de;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.75rem;
+}
+
+.crop-controls__ratio-btn:hover {
+  border-color: #8b949e;
+  background: #f6f8fa;
+}
+
+.crop-controls__ratio-btn--active {
+  border-color: #0969da;
+  background: #dbeafe;
+  color: #0969da;
+}
+
+.crop-controls__ratio-btn--active:hover {
+  border-color: #0969da;
+  background: #dbeafe;
+}
+
+.crop-controls__ratio-label {
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.crop-controls__ratio-value {
+  font-size: 0.7rem;
+  color: #656d76;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+}
+
+.crop-controls__ratio-btn--active .crop-controls__ratio-value {
+  color: #0969da;
+}
+
+.crop-controls__start-btn {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(45deg, #8b5cf6, #06b6d4);
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.crop-controls__start-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+}
+
+.crop-controls__info {
+  background: #f6f8fa;
+  border-radius: 8px;
+  padding: 1rem;
+  border-left: 4px solid #0969da;
+}
+
+.crop-controls__tip {
+  font-size: 0.875rem;
+  color: #24292f;
+}
+
+.crop-controls__tip strong {
+  color: #0969da;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.crop-controls__tip ul {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.crop-controls__tip li {
+  margin-bottom: 0.25rem;
+  color: #656d76;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .crop-controls__section {
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .crop-controls__title {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .crop-controls__ratio-grid {
+    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+    gap: 0.4rem;
+  }
+  
+  .crop-controls__ratio-btn {
+    padding: 0.6rem 0.4rem;
+    font-size: 0.7rem;
+  }
+  
+  .crop-controls__ratio-label {
+    font-size: 0.75rem;
+  }
+  
+  .crop-controls__ratio-value {
+    font-size: 0.65rem;
+  }
+  
+  .crop-controls__start-btn {
+    padding: 0.875rem;
+    font-size: 1rem;
+  }
+  
+  .crop-controls__info {
+    padding: 0.75rem;
+  }
+  
+  .crop-controls__tip {
+    font-size: 0.8rem;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+  .crop-controls__ratio-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .crop-controls__ratio-btn {
+    padding: 0.5rem 0.25rem;
+  }
+  
+  .crop-controls__tip ul {
+    padding-left: 1.25rem;
+  }
+}

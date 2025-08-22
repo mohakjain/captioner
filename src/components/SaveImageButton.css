@@ -1,0 +1,210 @@
+.save-image-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  font-family: inherit;
+  line-height: 1.2;
+}
+
+/* Size variants */
+.save-image-btn--small {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  min-height: 36px;
+}
+
+.save-image-btn--medium {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  min-height: 44px;
+}
+
+.save-image-btn--large {
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+  min-height: 52px;
+}
+
+/* Style variants */
+.save-image-btn--primary {
+  background: linear-gradient(45deg, #10b981, #059669);
+  color: white;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.save-image-btn--primary:hover:not(:disabled) {
+  background: linear-gradient(45deg, #059669, #047857);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.save-image-btn--secondary {
+  background: white;
+  color: #10b981;
+  border: 2px solid #10b981;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.save-image-btn--secondary:hover:not(:disabled) {
+  background: #ecfdf5;
+  border-color: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Loading state */
+.save-image-btn--loading {
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.save-image-btn--loading:hover {
+  transform: none !important;
+}
+
+/* Success state */
+.save-image-btn--success {
+  background: linear-gradient(45deg, #10b981, #059669) !important;
+  color: white !important;
+  border-color: #10b981 !important;
+}
+
+/* Disabled state */
+.save-image-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Button text */
+.save-image-btn__text {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  white-space: nowrap;
+}
+
+/* Loading spinner */
+.save-image-btn__spinner {
+  position: absolute;
+  right: 0.75rem;
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.save-image-btn--small .save-image-btn__spinner {
+  right: 0.5rem;
+  width: 14px;
+  height: 14px;
+}
+
+.save-image-btn--large .save-image-btn__spinner {
+  right: 1rem;
+  width: 18px;
+  height: 18px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .save-image-btn {
+    min-width: 140px;
+  }
+  
+  .save-image-btn--small {
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+    min-height: 40px;
+  }
+  
+  .save-image-btn--medium {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9375rem;
+    min-height: 46px;
+  }
+  
+  .save-image-btn--large {
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+    min-height: 50px;
+  }
+}
+
+/* Touch-friendly sizing on mobile */
+@media (hover: none) and (pointer: coarse) {
+  .save-image-btn {
+    min-height: 48px; /* Minimum touch target */
+  }
+  
+  .save-image-btn--small {
+    min-height: 44px;
+    padding: 0.75rem 1rem;
+  }
+  
+  .save-image-btn--medium {
+    min-height: 48px;
+    padding: 0.875rem 1.25rem;
+  }
+  
+  .save-image-btn--large {
+    min-height: 52px;
+    padding: 1rem 1.5rem;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .save-image-btn--primary {
+    border: 2px solid transparent;
+  }
+  
+  .save-image-btn--secondary {
+    border-width: 3px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .save-image-btn {
+    transition: none !important;
+  }
+  
+  .save-image-btn:hover:not(:disabled) {
+    transform: none !important;
+  }
+  
+  .save-image-btn__spinner {
+    animation: none !important;
+  }
+}
+
+/* Focus styles for accessibility */
+.save-image-btn:focus-visible {
+  outline: 2px solid #0969da;
+  outline-offset: 2px;
+}
+
+/* Print styles - hide download buttons */
+@media print {
+  .save-image-btn {
+    display: none !important;
+  }
+}

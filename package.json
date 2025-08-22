@@ -1,0 +1,36 @@
+{
+  "name": "captioner",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "homepage": "https://mohakjain.github.io/captioner",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --port 5173",
+    "test": "vitest run --environment jsdom",
+    "test:watch": "vitest --environment jsdom",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
+    "deploy:manual": "npm run predeploy && npm run deploy"
+  },
+  "dependencies": {
+    "heic2any": "^0.0.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-easy-crop": "^5.5.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.7.0",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "gh-pages": "^6.1.1",
+    "jsdom": "^25.0.0",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.1",
+    "vitest": "^2.0.5"
+  }
+}
