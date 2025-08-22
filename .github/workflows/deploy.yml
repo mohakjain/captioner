@@ -32,12 +32,14 @@ jobs:
         with:
           node-version: 20
           cache: npm
+          registry-url: 'https://registry.npmjs.org'
           
       - name: Setup Pages
         uses: actions/configure-pages@v4
         
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm ci --no-audit --prefer-offline || npm install
         
       - name: Run tests
         run: npm run test
