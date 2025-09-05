@@ -21,6 +21,14 @@ export interface CroppedImageData {
 // Import Caption from caption types  
 import { Caption } from './caption';
 
+export enum VintageMode {
+  Off = 'off',
+  Classic = 'classic',
+  Faded = 'faded',
+  Warm = 'warm',
+  BlackWhite = 'blackwhite'
+}
+
 export interface ImageData {
   file: File;
   url: string;
@@ -29,6 +37,7 @@ export interface ImageData {
   dimensions?: ImageDimensions;
   croppedImage?: CroppedImageData;
   captions?: Caption[];
+  vintageMode?: VintageMode; // Vintage filter mode
 }
 
 export interface ImageState {

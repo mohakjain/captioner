@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { Caption, VINTAGE_MOVIE_PRESET as CAPTION_PRESET } from '../types/caption';
-import { ImageData } from '../types/image';
+import { ImageData, VintageMode } from '../types/image';
 import { CaptionInput } from './CaptionInput';
 import { CaptionRenderer } from './CaptionRenderer';
 import { SaveImageButton } from './SaveImageButton';
@@ -19,6 +19,11 @@ export const CaptionPreview: React.FC<CaptionPreviewProps> = ({
   onSaveCaption,
   className = '',
 }) => {
+  // Initialize vintage mode state (default to Classic as requested)
+  const [vintageMode, setVintageMode] = useState<VintageMode>(
+    image.vintageMode ?? VintageMode.Classic // Default to Classic if not set
+  );
+  
   // Initialize caption with existing caption from image or default
   const [caption, setCaption] = useState<Caption>(() => {
     const existingCaption = image.captions?.[0];
@@ -36,6 +41,10 @@ export const CaptionPreview: React.FC<CaptionPreviewProps> = ({
 
   const handlePresetChange = useCallback(() => {
     // Preset change is handled in CaptionInput through handleCaptionChange
+  }, []);
+
+  const handleVintageModeChange = useCallback((mode: VintageMode) => {
+    setVintageMode(mode);
   }, []);
 
   // Use memoized caption to prevent unnecessary re-renders
@@ -59,14 +68,16 @@ export const CaptionPreview: React.FC<CaptionPreviewProps> = ({
   ]);
   const hasCaptionText = stableCaption.text.trim().length > 0;
 
-  // Create a temporary ImageData for the save button - use the image with captions
+  // Create a temporary ImageData for the save button - use the image with captions and vintage mode
   const captionedImageData: ImageData = useMemo(() => {
     return {
       ...image,
       // Add the current caption to the image data
       captions: hasCaptionText ? [stableCaption] : undefined,
+      // Include vintage mode setting
+      vintageMode: vintageMode,
     };
-  }, [image, stableCaption, hasCaptionText]);
+  }, [image, stableCaption, hasCaptionText, vintageMode]);
 
   return (
     <div className={`caption-preview ${className}`}>
@@ -84,10 +95,10 @@ export const CaptionPreview: React.FC<CaptionPreviewProps> = ({
       <div className="caption-preview__content">
         <div className="caption-preview__image-section">
           <CaptionRenderer
-            image={image}
+            image={{...image, vintageMode}}
             captions={hasCaptionText ? [stableCaption] : []}
             className="caption-preview__renderer"
-            key={`${image.url}-${image.croppedImage?.url || 'no-crop'}`}
+            key={`${image.url}-${image.croppedImage?.url || 'no-crop'}-${vintageMode}`}
           />
         </div>
 
@@ -96,6 +107,8 @@ export const CaptionPreview: React.FC<CaptionPreviewProps> = ({
             caption={caption}
             onCaptionChange={handleCaptionChange}
             onPresetChange={handlePresetChange}
+            vintageMode={vintageMode}
+            onVintageModeChange={handleVintageModeChange}
             className="caption-preview__input"
           />
 

@@ -67,7 +67,6 @@ const App: React.FC = () => {
     <div className="app">
       <header className="app__header">
         <h1 className="app__title">📽️ Captioner</h1>
-        <p className="app__subtitle">Add vintage movie-style captions to your images</p>
       </header>
 
       <main className="app__main">

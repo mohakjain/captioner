@@ -1,11 +1,14 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Caption, CaptionPreset, CAPTION_PRESETS } from '../types/caption';
+import { VintageMode } from '../types/image';
 import '../theme.css';
 
 interface CaptionInputProps {
   caption: Caption;
   onCaptionChange: (caption: Caption) => void;
   onPresetChange: (preset: CaptionPreset) => void;
+  vintageMode: VintageMode;
+  onVintageModeChange: (mode: VintageMode) => void;
   className?: string;
 }
 
@@ -13,6 +16,8 @@ export const CaptionInput: React.FC<CaptionInputProps> = ({
   caption,
   onCaptionChange,
   onPresetChange,
+  vintageMode,
+  onVintageModeChange,
   className = '',
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -68,6 +73,10 @@ export const CaptionInput: React.FC<CaptionInputProps> = ({
     };
     onCaptionChange(newCaption);
   }, [caption, onCaptionChange]);
+
+  const handleVintageModeChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    onVintageModeChange(e.target.value as VintageMode);
+  }, [onVintageModeChange]);
 
   // Auto-resize textarea
   useEffect(() => {
@@ -125,6 +134,40 @@ export const CaptionInput: React.FC<CaptionInputProps> = ({
                 <span>{preset.name}</span>
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* Vintage Mode Control */}
+        <div style={{
+          marginTop: 'var(--spacing-lg)',
+          paddingTop: 'var(--spacing-lg)',
+          borderTop: '1px solid var(--color-border)'
+        }}>
+          <div className="theme-flex-col theme-gap-sm">
+            <label htmlFor="vintage-mode" className="theme-label">
+              📽️ Stylize
+            </label>
+            <select
+              id="vintage-mode"
+              value={vintageMode}
+              onChange={handleVintageModeChange}
+              className="theme-input"
+              style={{
+                padding: 'var(--spacing-md)',
+                fontSize: 'var(--font-size-base)',
+                fontWeight: '500',
+                cursor: 'pointer',
+                backgroundColor: 'var(--color-bg-card)',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--border-radius-base)',
+              }}
+            >
+              <option value={VintageMode.Off}>Off</option>
+              <option value={VintageMode.Classic}>Classic Film</option>
+              <option value={VintageMode.Faded}>Faded Film</option>
+              <option value={VintageMode.Warm}>Warm Film</option>
+              <option value={VintageMode.BlackWhite}>Black & White</option>
+            </select>
           </div>
         </div>
 

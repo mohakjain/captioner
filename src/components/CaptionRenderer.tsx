@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import { Caption, CaptionStyle } from '../types/caption';
-import { ImageData } from '../types/image';
+import { ImageData, VintageMode } from '../types/image';
+import { applyVintageEffect } from '../utils/vintageFilter';
 
 interface CaptionRendererProps {
   image: ImageData;
@@ -42,6 +43,12 @@ export const CaptionRenderer: React.FC<CaptionRendererProps> = ({
       img.onload = () => {
         // Draw the base image
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        
+        // Apply vintage effect if enabled (BELOW caption layer as requested)
+        if (image.vintageMode && image.vintageMode !== VintageMode.Off) {
+          applyVintageEffect(ctx, canvas.width, canvas.height, image.vintageMode);
+        }
+        
         resolve();
       };
       img.onerror = () => reject(new Error('Failed to load image'));
@@ -59,6 +66,7 @@ export const CaptionRenderer: React.FC<CaptionRendererProps> = ({
     image.url, 
     image.dimensions?.width,
     image.dimensions?.height,
+    image.vintageMode,
     captions.map(c => 
       `${c.text}-${c.style.fontFamily}-${c.style.fontSize}-${c.style.fontStyle}-${c.style.color}-${c.style.strokeColor}-${c.style.strokeWidth}-${c.style.shadowColor}-${c.style.shadowBlur}-${c.style.shadowOffsetX}-${c.style.shadowOffsetY}-${c.style.lineHeight}-${c.position.x}-${c.position.y}-${c.position.alignment}`
     ).join('|')

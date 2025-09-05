@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
-import { ImageData } from '../types/image';
+import { ImageData, VintageMode } from '../types/image';
 import { drawCaptionText } from './CaptionRenderer';
+import { applyVintageEffect } from '../utils/vintageFilter';
 import './SaveImageButton.css';
 
 interface SaveImageButtonProps {
@@ -26,18 +27,8 @@ export const SaveImageButton: React.FC<SaveImageButtonProps> = ({
   const shouldUseCroppedImage = preferCropped && image.croppedImage;
   const hasCaption = image.captions && image.captions.length > 0;
   
-  // Determine button text based on image state
-  let imageType = 'original';
-  if (hasCaption && shouldUseCroppedImage) {
-    imageType = 'captioned + cropped';
-  } else if (hasCaption) {
-    imageType = 'captioned';
-  } else if (shouldUseCroppedImage) {
-    imageType = 'cropped';
-  }
-  
-  const buttonText = `💾 Save ${imageType} PNG`;
-  const ariaLabel = `Download ${imageType} image as PNG`;
+  const buttonText = `💾 Save as PNG`;
+  const ariaLabel = `Download image as PNG`;
 
   const handleDownload = useCallback(async () => {
     if (isDownloading) return;
@@ -79,6 +70,12 @@ export const SaveImageButton: React.FC<SaveImageButtonProps> = ({
           img.onload = () => {
             // Draw the base image
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            
+            // Apply vintage effect if enabled (BELOW caption layer)
+            if (image.vintageMode && image.vintageMode !== VintageMode.Off) {
+              applyVintageEffect(ctx, canvas.width, canvas.height, image.vintageMode);
+            }
+            
             resolve();
           };
           img.onerror = () => reject(new Error('Failed to load image'));
@@ -86,7 +83,7 @@ export const SaveImageButton: React.FC<SaveImageButtonProps> = ({
         });
 
         // Draw each caption onto the image
-        image.captions.forEach((caption) => {
+        image.captions?.forEach((caption) => {
           if (caption.text.trim()) {
             drawCaptionText(ctx, caption, canvas.width, canvas.height);
           }
@@ -103,12 +100,58 @@ export const SaveImageButton: React.FC<SaveImageButtonProps> = ({
           }, 'image/png');
         });
 
-        const suffix = shouldUseCroppedImage && image.croppedImage ? 'cropped_captioned' : 'captioned';
+        const cropPrefix = shouldUseCroppedImage && image.croppedImage ? 'cropped' : '';
+        const captionPrefix = 'captioned';
+        const vintagePrefix = getVintagePrefix(image.vintageMode);
+        const suffixParts = [cropPrefix, captionPrefix, vintagePrefix].filter(Boolean);
+        const suffix = suffixParts.join('_');
         downloadFilename = filename || `${image.name.replace(/\.[^/.]+$/, '')}_${suffix}.png`;
       } else if (shouldUseCroppedImage && image.croppedImage) {
-        // Use the cropped image blob if available (no captions)
-        blob = image.croppedImage.blob;
-        downloadFilename = filename || `${image.name.replace(/\.[^/.]+$/, '')}_cropped.png`;
+        // Use the cropped image - but need to apply vintage effect if enabled
+        if (image.vintageMode && image.vintageMode !== VintageMode.Off) {
+          // Need to re-process cropped image to apply vintage effect
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            throw new Error('Failed to get canvas context');
+          }
+
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          
+          await new Promise<void>((resolve, reject) => {
+            img.onload = () => {
+              canvas.width = image.croppedImage!.dimensions.width;
+              canvas.height = image.croppedImage!.dimensions.height;
+              ctx.drawImage(img, 0, 0);
+              
+              // Apply vintage effect
+              applyVintageEffect(ctx, canvas.width, canvas.height, image.vintageMode!);
+              
+              resolve();
+            };
+            img.onerror = () => reject(new Error('Failed to load cropped image'));
+            img.src = image.croppedImage!.url;
+          });
+
+          blob = await new Promise<Blob>((resolve, reject) => {
+            canvas.toBlob((result) => {
+              if (result) {
+                resolve(result);
+              } else {
+                reject(new Error('Failed to create blob'));
+              }
+            }, 'image/png');
+          });
+        } else {
+          // No vintage effect, use existing blob
+          blob = image.croppedImage.blob;
+        }
+        
+        const vintagePrefix = getVintagePrefix(image.vintageMode);
+        const suffixParts = ['cropped', vintagePrefix].filter(Boolean);
+        const suffix = suffixParts.join('_');
+        downloadFilename = filename || `${image.name.replace(/\.[^/.]+$/, '')}_${suffix}.png`;
       } else {
         // Convert original image to blob (no captions, no cropping)
         const canvas = document.createElement('canvas');
@@ -125,6 +168,12 @@ export const SaveImageButton: React.FC<SaveImageButtonProps> = ({
             canvas.width = img.naturalWidth;
             canvas.height = img.naturalHeight;
             ctx.drawImage(img, 0, 0);
+            
+            // Apply vintage effect if enabled (even without captions)
+            if (image.vintageMode && image.vintageMode !== VintageMode.Off) {
+              applyVintageEffect(ctx, canvas.width, canvas.height, image.vintageMode);
+            }
+            
             resolve();
           };
           img.onerror = () => reject(new Error('Failed to load image'));
@@ -141,7 +190,9 @@ export const SaveImageButton: React.FC<SaveImageButtonProps> = ({
           }, 'image/png');
         });
 
-        downloadFilename = filename || `${image.name.replace(/\.[^/.]+$/, '')}.png`;
+        const vintagePrefix = getVintagePrefix(image.vintageMode);
+        const suffix = vintagePrefix ? `_${vintagePrefix}` : '';
+        downloadFilename = filename || `${image.name.replace(/\.[^/.]+$/, '')}${suffix}.png`;
       }
 
       // Create download link and trigger download
@@ -192,3 +243,23 @@ export const SaveImageButton: React.FC<SaveImageButtonProps> = ({
     </button>
   );
 };
+
+// Helper function to get vintage mode prefix for filename
+function getVintagePrefix(vintageMode?: VintageMode): string {
+  if (!vintageMode || vintageMode === VintageMode.Off) {
+    return '';
+  }
+  
+  switch (vintageMode) {
+    case VintageMode.Classic:
+      return 'classic';
+    case VintageMode.Faded:
+      return 'faded';
+    case VintageMode.Warm:
+      return 'warm';
+    case VintageMode.BlackWhite:
+      return 'bw';
+    default:
+      return 'vintage';
+  }
+}

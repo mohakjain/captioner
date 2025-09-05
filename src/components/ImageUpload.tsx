@@ -125,9 +125,6 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
               <p className="image-upload__description">
                 Drag and drop an image here, or click to browse
               </p>
-              <p className="image-upload__formats">
-                Supports: JPG, PNG, WebP, HEIC (max 10MB)
-              </p>
             </>
           )}
         </div>
