@@ -1,6 +1,6 @@
 export interface CaptionStyle {
   fontFamily: string;
-  fontSize: number;
+  fontSize: number; // This will be treated as a percentage of image width (e.g., 4 = 4% of image width)
   fontStyle: 'normal' | 'italic';
   color: string;
   strokeColor: string;
@@ -34,11 +34,11 @@ export interface CaptionPreset {
 
 // Vintage movie subtitle preset
 export const VINTAGE_MOVIE_PRESET: CaptionPreset = {
-  name: 'Classic Movie',
+  name: 'Classic',
   description: 'Light yellow text with black outline',
   style: {
     fontFamily: 'Arial, sans-serif',
-    fontSize: 32,
+    fontSize: 4, // 4% of image width - will scale automatically
     fontStyle: 'italic',
     color: '#FFEB3B', // Light yellow
     strokeColor: '#000000', // Black outline
@@ -51,7 +51,7 @@ export const VINTAGE_MOVIE_PRESET: CaptionPreset = {
   },
   defaultPosition: {
     x: 50, // Center horizontally
-    y: 75, // Bottom third (75% down from top)
+    y: 90, 
     alignment: 'center',
   },
 };
@@ -60,7 +60,7 @@ export const VINTAGE_MOVIE_PRESET: CaptionPreset = {
 export const CAPTION_PRESETS: CaptionPreset[] = [
   VINTAGE_MOVIE_PRESET,
   {
-    name: 'Purple Dream',
+    name: 'Purple',
     description: 'Light purple with black outline',
     style: {
       ...VINTAGE_MOVIE_PRESET.style,
@@ -69,7 +69,7 @@ export const CAPTION_PRESETS: CaptionPreset[] = [
     defaultPosition: VINTAGE_MOVIE_PRESET.defaultPosition,
   },
   {
-    name: 'Classic White',
+    name: 'White',
     description: 'White text with black outline',
     style: {
       ...VINTAGE_MOVIE_PRESET.style,

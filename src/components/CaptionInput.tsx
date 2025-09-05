@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Caption, CaptionPreset, CAPTION_PRESETS } from '../types/caption';
-import './CaptionInput.css';
+import '../theme.css';
 
 interface CaptionInputProps {
   caption: Caption;
@@ -58,6 +58,17 @@ export const CaptionInput: React.FC<CaptionInputProps> = ({
     onCaptionChange(newCaption);
   }, [caption, onCaptionChange]);
 
+  const handleFontSizeChange = useCallback((value: number) => {
+    const newCaption = {
+      ...caption,
+      style: {
+        ...caption.style,
+        fontSize: Math.max(1, Math.min(10, value)), // 1% to 10% of image width
+      },
+    };
+    onCaptionChange(newCaption);
+  }, [caption, onCaptionChange]);
+
   // Auto-resize textarea
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -68,76 +79,122 @@ export const CaptionInput: React.FC<CaptionInputProps> = ({
   }, [caption.text]);
 
   return (
-    <div className={`caption-input ${className}`}>
-      <div className="caption-input__main">
-        <div className="caption-input__text-section">
-          <label htmlFor="caption-text" className="caption-input__label">
-            💬 Caption Text
+    <div className={`theme-card ${className}`} style={{ maxWidth: '500px', margin: '0 auto' }}>
+      <div className="theme-flex-col theme-gap-xl">
+        {/* Text Input Section */}
+        <div className="theme-flex-col theme-gap-sm">
+          <label htmlFor="caption-text" className="theme-label">
+            Caption
           </label>
           <textarea
             ref={textareaRef}
             id="caption-text"
             value={caption.text}
             onChange={handleTextChange}
-            placeholder="Enter your vintage movie caption..."
-            className="caption-input__textarea"
+            placeholder="Enter your caption"
+            className="theme-input"
             maxLength={200}
             rows={2}
+            style={{ 
+              minHeight: '44px',
+              resize: 'none',
+              height: 'auto'
+            }}
           />
-          <div className="caption-input__text-info">
-            <span className="caption-input__char-count">
-              {caption.text.length}/200
-            </span>
-          </div>
+
         </div>
 
-        <div className="caption-input__presets">
-          <label className="caption-input__label">🎨 Style Presets</label>
-          <div className="caption-input__preset-grid">
+        {/* Preset Styles */}
+        <div className="theme-flex-col theme-gap-md">
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+            gap: 'var(--spacing-md)'
+          }}>
             {CAPTION_PRESETS.map((preset) => (
               <button
                 key={preset.name}
                 onClick={() => handlePresetSelect(preset)}
-                className="caption-input__preset-btn"
+                className="theme-button"
                 style={{
                   background: `linear-gradient(45deg, ${preset.style.color}, ${preset.style.strokeColor})`,
+                  color: 'white',
+                  flexDirection: 'column',
                 }}
               >
-                <span className="caption-input__preset-name">{preset.name}</span>
-                <span className="caption-input__preset-desc">{preset.description}</span>
+                <span>{preset.name}</span>
               </button>
             ))}
           </div>
         </div>
 
-       
-        <div className="caption-input__advanced">
-          <div className="caption-input__row">
-            <div className="caption-input__field">
-              <label className="caption-input__label">Font Style</label>
+        {/* Advanced Controls */}
+        <div style={{
+          marginTop: 'var(--spacing-xl)',
+          paddingTop: 'var(--spacing-xl)',
+          borderTop: '1px solid var(--color-border)'
+        }}>
+          <div className="theme-grid-2">
+            <div className="theme-flex-col theme-gap-sm">
               <button
                 onClick={handleFontStyleToggle}
-                className={`caption-input__toggle-btn ${
+                className={`theme-button-secondary ${
                   caption.style.fontStyle === 'italic' ? 'active' : ''
                 }`}
+                style={caption.style.fontStyle === 'italic' ? {
+                  borderColor: 'var(--color-focus)',
+                  backgroundColor: '#dbeafe',
+                  color: 'var(--color-focus)'
+                } : {}}
               >
                 <em>Italic</em>
               </button>
             </div>
             
-            <div className="caption-input__field">
-              <label className="caption-input__label">
-                Position: {caption.position.y}%
+            <div className="theme-flex-col theme-gap-sm">
+              <label className="theme-label">
+                Font Size: {caption.style.fontSize.toFixed(1)}%
               </label>
               <input
                 type="range"
-                min="10"
-                max="98"
-                value={caption.position.y}
-                onChange={(e) => handlePositionChange('y', Number(e.target.value))}
-                className="caption-input__slider"
+                min="1"
+                max="8"
+                step="0.1"
+                value={caption.style.fontSize}
+                onChange={(e) => handleFontSizeChange(Number(e.target.value))}
+                style={{
+                  width: '100%',
+                  height: '6px',
+                  borderRadius: '3px',
+                  background: 'var(--color-gray-200)',
+                  outline: 'none',
+                  WebkitAppearance: 'none',
+                  cursor: 'pointer'
+                }}
               />
             </div>
+          </div>
+          
+          <div className="theme-flex-col theme-gap-sm" style={{ marginTop: 'var(--spacing-lg)' }}>
+            <label className="theme-label">
+              Position: {caption.position.y}%
+            </label>
+            <input
+              type="range"
+              min="10"
+              max="98"
+              value={caption.position.y}
+              onChange={(e) => handlePositionChange('y', Number(e.target.value))}
+              style={{
+                width: '100%',
+                height: '6px',
+                borderRadius: '3px',
+                background: 'var(--color-gray-200)',
+                outline: 'none',
+                WebkitAppearance: 'none',
+                cursor: 'pointer'
+              }}
+            />
           </div>
         </div>
       </div>

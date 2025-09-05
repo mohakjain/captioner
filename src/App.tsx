@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { ImageUpload } from './components/ImageUpload';
 import { ImagePreview } from './components/ImagePreview';
 import { ImageCrop } from './components/ImageCrop';
-import { CropControls } from './components/CropControls';
 import { SaveImageButton } from './components/SaveImageButton';
 import { CaptionPreview } from './components/CaptionPreview';
 import { useImageState } from './hooks/useImageState';
 import { AspectRatio, ASPECT_RATIOS } from './types/image';
 import './App.css';
+import './theme.css';
 
 const App: React.FC = () => {
   const { 
@@ -29,11 +29,13 @@ const App: React.FC = () => {
     removeCaptionsFromImage
   } = useImageState();
 
-  const [selectedAspectRatio, setSelectedAspectRatio] = useState<AspectRatio>(ASPECT_RATIOS[0]); // Default to 'Free'
+  const [selectedAspectRatio, setSelectedAspectRatio] = useState<AspectRatio>(ASPECT_RATIOS[0]); // Default to 'Cinematic'
 
   const handleImageSelect = async (file: File) => {
     clearError();
     await setImage(file);
+    // Automatically start cropping since we only have one aspect ratio
+    startCropping();
   };
 
   // If we're in cropping mode, show the crop interface
@@ -85,66 +87,43 @@ const App: React.FC = () => {
               showCroppedImage={true}
             />
             
-            {/* Show different UI based on image state */}
-            {!currentImage.croppedImage && !currentImage.captions ? (
-              // Original image - show crop controls and save original option
-              <>
-                <CropControls
-                  selectedAspectRatio={selectedAspectRatio}
-                  onAspectRatioChange={setSelectedAspectRatio}
-                  onStartCrop={startCropping}
-                  className="app__crop-controls"
+            {/* Show UI for processed image (cropped and/or captioned) */}
+            <div className="app__processed-actions">
+              <div className="app__primary-actions">
+                <SaveImageButton
+                  image={currentImage}
+                  preferCropped={currentImage.croppedImage ? true : false}
+                  variant="primary"
+                  size="medium"
+                  className="app__save-processed"
                 />
-                
-                <div className="app__save-section">
-                  <SaveImageButton
-                    image={currentImage}
-                    preferCropped={false}
-                    variant="secondary"
-                    size="medium"
-                    className="app__save-original"
-                  />
-                </div>
-              </>
-            ) : (
-              // Image has been processed (cropped and/or captioned)
-              <div className="app__processed-actions">
-                <div className="app__primary-actions">
-                  <SaveImageButton
-                    image={currentImage}
-                    preferCropped={currentImage.croppedImage ? true : false}
-                    variant="primary"
-                    size="medium"
-                    className="app__save-processed"
-                  />
-                  <button 
-                    className="app__button app__button--primary"
-                    onClick={startCaptioning}
-                  >
-                    {currentImage.captions ? '✏️ Edit Captions' : '📝 Add Captions'}
-                  </button>
-                </div>
-                
-                <div className="app__secondary-actions">
-                  {currentImage.croppedImage && (
-                    <button 
-                      onClick={removeCroppedImage}
-                      className="app__button app__button--secondary"
-                    >
-                      Recrop Image
-                    </button>
-                  )}
-                  {currentImage.captions && (
-                    <button 
-                      onClick={removeCaptionsFromImage}
-                      className="app__button app__button--secondary"
-                    >
-                      Remove Captions
-                    </button>
-                  )}
-                </div>
+                <button 
+                  className="app__button app__button--primary"
+                  onClick={startCaptioning}
+                >
+                  {currentImage.captions ? '✏️ Edit Captions' : '📝 Add Captions'}
+                </button>
               </div>
-            )}
+              
+              <div className="app__secondary-actions">
+                {currentImage.croppedImage && (
+                  <button 
+                    onClick={removeCroppedImage}
+                    className="app__button app__button--secondary"
+                  >
+                    Recrop Image
+                  </button>
+                )}
+                {currentImage.captions && (
+                  <button 
+                    onClick={removeCaptionsFromImage}
+                    className="app__button app__button--secondary"
+                  >
+                    Remove Captions
+                  </button>
+                )}
+              </div>
+            </div>
             
             <div className="app__actions">
               <button 
@@ -159,7 +138,7 @@ const App: React.FC = () => {
       </main>
 
       <footer className="app__footer">
-        <p>Ready to add some vintage movie magic to your photos!</p>
+        <p> by <a target="_blank" href="https://x.com/mohakjain_">@mohakjain_</a></p>
       </footer>
     </div>
   );

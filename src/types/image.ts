@@ -8,6 +8,7 @@ export interface CropData {
   y: number;
   width: number;
   height: number;
+  rotation?: number; // Rotation in degrees
 }
 
 export interface CroppedImageData {
@@ -46,11 +47,5 @@ export interface AspectRatio {
 }
 
 export const ASPECT_RATIOS: AspectRatio[] = [
-  { label: 'Free', value: null, displayRatio: 'Free' },
-  { label: 'Square', value: 1, displayRatio: '1:1' },
-  { label: 'Photo', value: 4/3, displayRatio: '4:3' },
-  { label: 'Landscape', value: 16/9, displayRatio: '16:9' },
-  { label: 'Portrait', value: 3/4, displayRatio: '3:4' },
-  { label: 'Story', value: 9/16, displayRatio: '9:16' },
-  { label: 'Wide', value: 3/2, displayRatio: '3:2' },
+  { label: 'Cinematic', value: 1.85, displayRatio: '1.85:1' },
 ];

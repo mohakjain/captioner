@@ -56,7 +56,7 @@ export const CaptionedImageDisplay: React.FC<CaptionedImageDisplayProps> = ({
           img.src = imageUrl;
         });
 
-        // Draw each saved caption
+        // Draw each saved caption using the improved scaling logic
         image.captions.forEach((caption) => {
           if (caption.text.trim()) {
             drawCaptionText(ctx, caption, canvas.width, canvas.height);
@@ -102,3 +102,4 @@ export const CaptionedImageDisplay: React.FC<CaptionedImageDisplayProps> = ({
     </div>
   );
 };
+

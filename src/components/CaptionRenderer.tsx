@@ -97,9 +97,14 @@ function drawCaptionText(
 ): void {
   const { text, style, position } = caption;
   
-  // Calculate font size relative to canvas size (responsive scaling)
-  const baseFontSize = Math.max(16, Math.min(canvasWidth * 0.04, 48));
-  const fontSize = baseFontSize;
+  // Calculate font size as percentage of image width for consistent scaling
+  // fontSize in style is percentage (e.g., 4 = 4% of image width)
+  const calculatedFontSize = (style.fontSize / 100) * canvasWidth;
+  
+  // Apply reasonable bounds: minimum 12px, maximum 10% of canvas width
+  const minFontSize = 12;
+  const maxFontSize = canvasWidth * 0.1;
+  const fontSize = Math.max(minFontSize, Math.min(calculatedFontSize, maxFontSize));
   
   // Set up text styling
   ctx.font = `${style.fontStyle} ${fontSize}px ${style.fontFamily}`;
@@ -117,6 +122,13 @@ function drawCaptionText(
   const totalHeight = lines.length * lineHeight;
   const startY = y - (totalHeight / 2);
   
+  // Scale other properties relative to font size for consistency
+  const scaleFactor = fontSize / 32; // Base scale factor (32px was the original size)
+  const scaledStrokeWidth = Math.max(3, style.strokeWidth * scaleFactor);
+  const scaledShadowBlur = Math.max(1, style.shadowBlur * scaleFactor)  ;
+  const scaledShadowOffsetX = style.shadowOffsetX * scaleFactor;
+  const scaledShadowOffsetY = style.shadowOffsetY * scaleFactor;
+  
   // Draw each line with full vintage styling
   lines.forEach((line, index) => {
     const lineY = startY + (index * lineHeight);
@@ -125,9 +137,9 @@ function drawCaptionText(
     if (style.shadowBlur > 0) {
       ctx.save();
       ctx.shadowColor = style.shadowColor;
-      ctx.shadowBlur = style.shadowBlur;
-      ctx.shadowOffsetX = style.shadowOffsetX;
-      ctx.shadowOffsetY = style.shadowOffsetY;
+      ctx.shadowBlur = scaledShadowBlur;
+      ctx.shadowOffsetX = scaledShadowOffsetX;
+      ctx.shadowOffsetY = scaledShadowOffsetY;
       ctx.fillStyle = style.color;
       ctx.fillText(line, x, lineY);
       ctx.restore();
@@ -136,7 +148,7 @@ function drawCaptionText(
     // Draw stroke (outline)
     if (style.strokeWidth > 0) {
       ctx.strokeStyle = style.strokeColor;
-      ctx.lineWidth = style.strokeWidth;
+      ctx.lineWidth = scaledStrokeWidth;
       ctx.lineJoin = 'round';
       ctx.lineCap = 'round';
       ctx.strokeText(line, x, lineY);

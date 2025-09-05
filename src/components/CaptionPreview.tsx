@@ -1,10 +1,9 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { Caption, VINTAGE_MOVIE_PRESET } from '../types/caption';
+import { Caption, VINTAGE_MOVIE_PRESET as CAPTION_PRESET } from '../types/caption';
 import { ImageData } from '../types/image';
 import { CaptionInput } from './CaptionInput';
 import { CaptionRenderer } from './CaptionRenderer';
 import { SaveImageButton } from './SaveImageButton';
-import { useStableCaption } from '../hooks/useStableCaption';
 import './CaptionPreview.css';
 
 interface CaptionPreviewProps {
@@ -26,8 +25,8 @@ export const CaptionPreview: React.FC<CaptionPreviewProps> = ({
     return existingCaption || {
       id: 'main-caption',
       text: '',
-      style: VINTAGE_MOVIE_PRESET.style,
-      position: VINTAGE_MOVIE_PRESET.defaultPosition,
+      style: CAPTION_PRESET.style,
+      position: CAPTION_PRESET.defaultPosition,
     };
   });
 
@@ -39,8 +38,25 @@ export const CaptionPreview: React.FC<CaptionPreviewProps> = ({
     // Preset change is handled in CaptionInput through handleCaptionChange
   }, []);
 
-  // Use stable caption to prevent unnecessary re-renders
-  const stableCaption = useStableCaption(caption);
+  // Use memoized caption to prevent unnecessary re-renders
+  const stableCaption = useMemo(() => caption, [
+    caption.text, 
+    caption.style.color, 
+    caption.style.fontSize, 
+    caption.style.fontFamily,
+    caption.style.fontStyle,
+    caption.style.strokeColor,
+    caption.style.strokeWidth,
+    caption.style.shadowColor,
+    caption.style.shadowBlur,
+    caption.style.shadowOffsetX,
+    caption.style.shadowOffsetY,
+    caption.style.lineHeight,
+    caption.position.x,
+    caption.position.y,
+    caption.position.alignment,
+    caption.id
+  ]);
   const hasCaptionText = stableCaption.text.trim().length > 0;
 
   // Create a temporary ImageData for the save button - use the image with captions
@@ -83,20 +99,12 @@ export const CaptionPreview: React.FC<CaptionPreviewProps> = ({
             className="caption-preview__input"
           />
 
-          {hasCaptionText && (
+          {(
             <div className="caption-preview__actions">
               <div className="caption-preview__action-buttons">
-                <button
-                  onClick={() => onSaveCaption(stableCaption)}
-                  className="caption-preview__save-caption-btn"
-                  type="button"
-                >
-                  💾 Save Caption to Image
-                </button>
-                
                 <SaveImageButton
                   image={captionedImageData}
-                  preferCropped={false}
+                  preferCropped={true}
                   variant="primary"
                   size="large"
                   filename={`${image.name.replace(/\.[^/.]+$/, '')}_captioned.png`}

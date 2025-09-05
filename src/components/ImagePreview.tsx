@@ -44,18 +44,6 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
           />
         )}
         
-        {showCroppedImage && image.croppedImage && (
-          <div className="image-preview__crop-badge">
-            🎯 Cropped
-          </div>
-        )}
-        
-        {image.captions && image.captions.length > 0 && (
-          <div className="image-preview__caption-badge">
-            💬 Captioned
-          </div>
-        )}
-        
         {onRemove && (
           <button
             onClick={onRemove}
@@ -65,16 +53,6 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
             ×
           </button>
         )}
-      </div>
-      
-      <div className="image-preview__info">
-        <div className="image-preview__details">
-          {displayDimensions && (
-            <span className="image-preview__dimensions">
-              {displayDimensions.width} × {displayDimensions.height}
-            </span>
-          )}
-        </div>
       </div>
     </div>
   );

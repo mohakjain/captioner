@@ -73,7 +73,7 @@ export const useImageState = () => {
   }, []);
 
   const cancelCaptioning = useCallback(() => {
-    setState(prev => ({ ...prev, isCaptioning: false }));
+    setState(prev => ({ ...prev, isCaptioning: false, isCropping: true }));
   }, []);
 
   const saveCaptionToImage = useCallback((caption: Caption) => {
@@ -113,6 +113,7 @@ export const useImageState = () => {
         } : null,
         isProcessing: false,
         isCropping: false,
+        isCaptioning: true,
       }));
     } catch (error) {
       setState(prev => ({
@@ -180,22 +181,63 @@ const createCroppedImage = async (imageSrc: string, cropData: CropData): Promise
           throw new Error('Could not get canvas context');
         }
 
-        // Set canvas dimensions to crop size
-        canvas.width = cropData.width;
-        canvas.height = cropData.height;
+        const rotation = cropData.rotation || 0;
 
-        // Draw the cropped portion of the image
-        ctx.drawImage(
-          image,
-          cropData.x, // source x
-          cropData.y, // source y
-          cropData.width, // source width
-          cropData.height, // source height
-          0, // destination x
-          0, // destination y
-          cropData.width, // destination width
-          cropData.height // destination height
-        );
+        // If there's rotation, we need to apply it before cropping
+        if (rotation !== 0) {
+          // Calculate rotated canvas dimensions
+          const rotatedCanvas = document.createElement('canvas');
+          const rotatedCtx = rotatedCanvas.getContext('2d');
+          
+          if (!rotatedCtx) {
+            throw new Error('Could not get rotated canvas context');
+          }
+
+          // Normalize rotation to 0-360 range
+          const normalizedRotation = ((rotation % 360) + 360) % 360;
+          
+          // For 90 and 270 degree rotations, swap width and height
+          const needsDimensionSwap = normalizedRotation === 90 || normalizedRotation === 270;
+          rotatedCanvas.width = needsDimensionSwap ? image.naturalHeight : image.naturalWidth;
+          rotatedCanvas.height = needsDimensionSwap ? image.naturalWidth : image.naturalHeight;
+
+          // Apply rotation transformation
+          rotatedCtx.translate(rotatedCanvas.width / 2, rotatedCanvas.height / 2);
+          rotatedCtx.rotate((normalizedRotation * Math.PI) / 180);
+          rotatedCtx.drawImage(image, -image.naturalWidth / 2, -image.naturalHeight / 2);
+
+          // Now crop from the rotated image
+          canvas.width = cropData.width;
+          canvas.height = cropData.height;
+
+          ctx.drawImage(
+            rotatedCanvas,
+            cropData.x, // source x
+            cropData.y, // source y
+            cropData.width, // source width
+            cropData.height, // source height
+            0, // destination x
+            0, // destination y
+            cropData.width, // destination width
+            cropData.height // destination height
+          );
+        } else {
+          // No rotation - standard crop
+          canvas.width = cropData.width;
+          canvas.height = cropData.height;
+
+          ctx.drawImage(
+            image,
+            cropData.x, // source x
+            cropData.y, // source y
+            cropData.width, // source width
+            cropData.height, // source height
+            0, // destination x
+            0, // destination y
+            cropData.width, // destination width
+            cropData.height // destination height
+          );
+        }
 
         canvas.toBlob(
           (blob) => {

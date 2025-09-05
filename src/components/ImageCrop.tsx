@@ -49,6 +49,15 @@ export const ImageCrop: React.FC<ImageCropProps> = ({
     setRotation(rotation);
   }, []);
 
+  const handleRotate90 = useCallback(() => {
+    setRotation(prev => {
+      let newRotation = (prev + 90) % 360;
+      // Normalize to positive degrees
+      if (newRotation < 0) newRotation += 360;
+      return newRotation;
+    });
+  }, []);
+
   const onCropCompleteHandler = useCallback(
     (croppedArea: Area, croppedAreaPixels: Area) => {
       setCroppedAreaPixels(croppedAreaPixels);
@@ -70,6 +79,7 @@ export const ImageCrop: React.FC<ImageCropProps> = ({
       y: Math.round(croppedAreaPixels.y),
       width: Math.round(croppedAreaPixels.width),
       height: Math.round(croppedAreaPixels.height),
+      rotation: rotation, // Pass the rotation value to be applied during processing
     };
 
     onCropComplete(cropData);
@@ -105,34 +115,30 @@ export const ImageCrop: React.FC<ImageCropProps> = ({
       </div>
 
       <div className="image-crop__controls">
-        <div className="image-crop__control-group">
-          <label className="image-crop__label">
-            Zoom: {Math.round(zoom * 100)}%
-          </label>
-          <input
-            type="range"
-            min={1}
-            max={3}
-            step={0.1}
-            value={zoom}
-            onChange={(e) => setZoom(Number(e.target.value))}
-            className="image-crop__slider"
-          />
-        </div>
+        <div className="image-crop__top-controls">
+          <div className="image-crop__control-group">
+            <label className="image-crop__label">
+              Zoom: {Math.round(zoom * 100)}%
+            </label>
+            <input
+              type="range"
+              min={1}
+              max={3}
+              step={0.1}
+              value={zoom}
+              onChange={(e) => setZoom(Number(e.target.value))}
+              className="image-crop__slider"
+            />
+          </div>
 
-        <div className="image-crop__control-group">
-          <label className="image-crop__label">
-            Rotation: {rotation}°
-          </label>
-          <input
-            type="range"
-            min={-180}
-            max={180}
-            step={1}
-            value={rotation}
-            onChange={(e) => setRotation(Number(e.target.value))}
-            className="image-crop__slider"
-          />
+          <button
+            onClick={handleRotate90}
+            className="image-crop__rotate-btn"
+            type="button"
+            title="Rotate 90° clockwise"
+          >
+            🔄 Rotate
+          </button>
         </div>
 
         <div className="image-crop__actions">
